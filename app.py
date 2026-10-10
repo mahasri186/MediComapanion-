@@ -153,6 +153,29 @@ def inventory():
 
     <br><a href="/dashboard">Back to Dashboard</a>
     """
+@app.route("/expiry")
+def expiry():
+    if "user" not in session:
+        return redirect("/")
+
+    today = date.today().isoformat()
+    expired = []
+
+    for medicine in medicines:
+        if medicine["expiry"] < today:
+            expired.append(medicine)
+
+    return f"""
+    <h1>Expiry Date Tracking</h1>
+    <p>Today's Date: {today}</p>
+    <h2>Expired Medicines</h2>
+    {''.join(
+        f"<p>{m['name']} - Expiry: {m['expiry']}</p>"
+        for m in expired
+    ) or '<p>No expired medicines found.</p>'}
+    <br>
+    <a href="/dashboard">Back to Dashboard</a>
+    """
 @app.route("/prescription", methods=["GET", "POST"])
 def prescription():
     if "user" not in session:

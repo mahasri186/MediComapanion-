@@ -1,0 +1,25 @@
+ *"Live Demo"*
+
+Project Name: Pharmacy Inventory and Prescription Validation Platform
+
+Live Application: https://medicomapanion-pharmacy.onrender.com
+
+Project Status:
+        Completed and deployed successfully.
+
+Features:  
+    - Medicine Inventory Management
+    - Expiry Date Tracking
+    - Low Stock Notifications
+    - Prescription Submission Demo
+    - Pharmacy Billing
+    - Automatic Stock Deduction After Billing
+
+Technology Stack:
+        - Python
+        - Flask
+        - SQLite
+        - HTML
+
+Developer:
+    Python Track Project

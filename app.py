@@ -176,6 +176,26 @@ def expiry():
     <br>
     <a href="/dashboard">Back to Dashboard</a>
     """
+@app.route("/stock")
+def stock():
+    if "user" not in session:
+        return redirect("/")
+
+    low_stock = [
+        medicine for medicine in medicines
+        if int(medicine["quantity"]) <= 10
+    ]
+
+    return f"""
+    <h1>Low Stock Notification</h1>
+    <h2>Medicines with Low Stock</h2>
+    {''.join(
+        f"<p>{m['name']} - Quantity: {m['quantity']}</p>"
+        for m in low_stock
+    ) or '<p>No low-stock medicines found.</p>'}
+    <br>
+    <a href="/dashboard">Back to Dashboard</a>
+    """
 @app.route("/prescription", methods=["GET", "POST"])
 def prescription():
     if "user" not in session:

@@ -5,7 +5,24 @@ app = Flask(__name__)
 app.secret_key = "pharmacy_demo_key"
 
 medicines = []
+def init_db():
+    conn = sqlite3.connect("pharmacy.db")
+    cursor = conn.cursor()
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS medicines (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            quantity INTEGER NOT NULL,
+            expiry TEXT NOT NULL
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+
+init_db()
 
 @app.route("/")
 def login():

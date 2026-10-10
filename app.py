@@ -182,34 +182,41 @@ def inventory():
     """
 @app.route("/expiry")
 def expiry():
-if "user" not in session:
-return redirect("/")
+    if "user" not in session:
+        return redirect("/")
 
-today = date.today().isoformat()
+    today = date.today().isoformat()
 
-conn = sqlite3.connect("pharmacy.db")
-cursor = conn.cursor()
+    conn = sqlite3.connect("pharmacy.db")
+    cursor = conn.cursor()
 
-cursor.execute(
-    "SELECT name, quantity, expiry FROM medicines WHERE expiry <= ?",
-    (today,)
-)
-expired = cursor.fetchall()
-conn.close()
+    cursor.execute(
+        "SELECT name, quantity, expiry FROM medicines WHERE expiry <= ?",
+        (today,)
+    )
 
-return f"""
-<h1>Expiry Date Tracking</h1>
-<p>Today's Date: {today}</p>
-<h2>Expired or Expiring Today</h2>
+    expired = cursor.fetchall()
+    conn.close()
 
-{''.join(
-    f"<p>{name} - Quantity: {quantity} - Expiry: {expiry}</p>"
-    for name, quantity, expiry in expired
-) or '<p>No expired medicines found.</p>'}
+    rows = ""
 
-<br>
-<a href="/dashboard">Back to Dashboard</a>
-"""
+    for name, quantity, expiry_date in expired:
+        rows += (
+            f"<p>{name} - Quantity: {quantity} "
+            f"- Expiry: {expiry_date}</p>"
+        )
+
+    if not rows:
+        rows = "<p>No expired medicines found.</p>"
+
+    return f"""
+    <h1>Expiry Date Tracking</h1>
+    <p>Today's Date: {today}</p>
+    <h2>Expired or Expiring Today</h2>
+    {rows}
+    <br>
+    <a href="/dashboard">Back to Dashboard</a>
+    """
 @app.route("/stock")
 def stock():
     if "user" not in session:

@@ -1,6 +1,6 @@
 from flask import Flask, request, redirect, session
 from datetime import date
-
+import sqlite3
 app = Flask(__name__)
 app.secret_key = "pharmacy_demo_key"
 

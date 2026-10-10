@@ -112,8 +112,7 @@ def inventory():
     cursor = conn.cursor()
     if request.method == "POST":
         name = request.form["name"]
-        quantity = 
-        int(request.form["quantity"])
+        quantity = int(request.form["quantity"])
         expiry = request.form["expiry"]
 
         cursor.execute(

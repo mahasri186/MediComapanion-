@@ -108,35 +108,44 @@ def inventory():
     if "user" not in session:
         return redirect("/")
 
+    conn = sqlite3.connect("pharmacy.db")
+    cursor = conn.cursor()
+
     if request.method == "POST":
         name = request.form["name"]
         quantity = int(request.form["quantity"])
         expiry = request.form["expiry"]
 
-        medicines.append({
-            "name": name,
-            "quantity": quantity,
-            "expiry": expiry
-        })
+        cursor.execute(
+            "INSERT INTO medicines (name, quantity, expiry) VALUES (?, ?, ?)",
+            (name, quantity, expiry)
+        )
+        conn.commit()
+
+    cursor.execute("SELECT name, quantity, expiry FROM medicines")
+    saved_medicines = cursor.fetchall()
+    conn.close()
 
     today = date.today().isoformat()
-
     rows = ""
 
-    for medicine in medicines:
-        if medicine["expiry"] < today:
+    for medicine in saved_medicines:
+        name, quantity, expiry = medicine
+
+        if expiry < today:
             status = "EXPIRED - Do not dispense"
-        elif medicine["expiry"] == today:
+        elif expiry == today:
             status = "Expires today"
-        elif medicine["quantity"] <= 10:
+        elif quantity <= 10:
             status = "Low Stock"
         else:
             status = "Available"
+
         rows += f"""
         <tr>
-            <td>{medicine['name']}</td>
-            <td>{medicine['quantity']}</td>
-            <td>{medicine['expiry']}</td>
+            <td>{name}</td>
+            <td>{quantity}</td>
+            <td>{expiry}</td>
             <td>{status}</td>
         </tr>
         """

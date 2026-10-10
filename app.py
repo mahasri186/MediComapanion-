@@ -278,19 +278,55 @@ def billing():
     result = ""
 
     if request.method == "POST":
-        medicine_name = request.form["medicine"]
+        medicine_name = request.form["medicine"].strip()
         quantity = int(request.form["quantity"])
         price = float(request.form["price"])
 
-        total = quantity * price
+        conn = sqlite3.connect("pharmacy.db")
+        cursor = conn.cursor()
 
-        result = f"""
-        <h3>Bill Generated Successfully!</h3>
-        <p>Medicine: {medicine_name}</p>
-        <p>Quantity: {quantity}</p>
-        <p>Price per Tablet: ₹{price:.2f}</p>
-        <h3>Total Amount: ₹{total:.2f}</h3>
-        """
+        cursor.execute(
+            "SELECT quantity, expiry FROM medicines WHERE name = ?",
+            (medicine_name,)
+        )
+        medicine = cursor.fetchone()
+
+        if medicine is None:
+            result = "<h3>Medicine not found in inventory!</h3>"
+
+        elif medicine[0] < quantity:
+            result = (
+                f"<h3>Insufficient stock!</h3>"
+                f"<p>Available quantity: {medicine[0]}</p>"
+            )
+
+        elif medicine[1] <= date.today().isoformat():
+            result = (
+                "<h3>Expired or expiring today! "
+                "Do not dispense.</h3>"
+            )
+
+        else:
+            new_quantity = medicine[0] - quantity
+
+            cursor.execute(
+                "UPDATE medicines SET quantity = ? WHERE name = ?",
+                (new_quantity, medicine_name)
+            )
+            conn.commit()
+
+            total = quantity * price
+
+            result = f"""
+            <h3>Bill Generated Successfully!</h3>
+            <p>Medicine: {medicine_name}</p>
+            <p>Quantity Sold: {quantity}</p>
+            <p>Price per Tablet: ₹{price:.2f}</p>
+            <h3>Total Amount: ₹{total:.2f}</h3>
+            <p>Remaining Stock: {new_quantity}</p>
+            """
+
+        conn.close()
 
     return f"""
     <html>

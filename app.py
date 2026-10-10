@@ -113,7 +113,7 @@ def inventory():
     if request.method == "POST":
         name = request.form["name"]
         quantity = 
-    int(request.form["quantity"])
+        int(request.form["quantity"])
         expiry = request.form["expiry"]
 
         cursor.execute(

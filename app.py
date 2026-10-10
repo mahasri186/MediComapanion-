@@ -112,16 +112,18 @@ def inventory():
     cursor = conn.cursor()
 
     if request.method == "POST":
-        name = request.form["name"]
-        quantity = int(request.form["quantity"])
-        expiry = request.form["expiry"]
+    name = request.form["name"]
+    quantity = int(request.form["quantity"])
+    expiry = request.form["expiry"]
 
-        cursor.execute(
-            "INSERT INTO medicines (name, quantity, expiry) VALUES (?, ?, ?)",
-            (name, quantity, expiry)
-        )
-        conn.commit()
+    cursor.execute(
+        "INSERT INTO medicines (name, quantity, expiry) VALUES (?, ?, ?)",
+        (name, quantity, expiry)
+    )
+    conn.commit()
 
+    conn.close()
+    return redirect("/medicines")
     cursor.execute("SELECT name, quantity, expiry FROM medicines")
     saved_medicines = cursor.fetchall()
     conn.close()

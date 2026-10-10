@@ -208,18 +208,24 @@ def stock():
     if "user" not in session:
         return redirect("/")
 
-    low_stock = [
-        medicine for medicine in medicines
-        if int(medicine["quantity"]) <= 10
-    ]
+    conn = sqlite3.connect("pharmacy.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT name, quantity FROM medicines WHERE quantity <= 10"
+    )
+    low_stock = cursor.fetchall()
+    conn.close()
 
     return f"""
     <h1>Low Stock Notification</h1>
     <h2>Medicines with Low Stock</h2>
+
     {''.join(
-        f"<p>{m['name']} - Quantity: {m['quantity']}</p>"
-        for m in low_stock
+        f"<p>{name} - Quantity: {quantity}</p>"
+        for name, quantity in low_stock
     ) or '<p>No low-stock medicines found.</p>'}
+
     <br>
     <a href="/dashboard">Back to Dashboard</a>
     """
